@@ -15,7 +15,7 @@ const categorySchema = new Schema(
     },
     createdBy: {
       type: Schema.Types.ObjectId,
-     // Admin who creates it   
+      // Admin who creates it
       ref: "User",
       required: true,
     },
