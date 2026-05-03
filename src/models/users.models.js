@@ -1,4 +1,5 @@
-import mongoose, { Schema, Model, mongo } from "mongoose";
+import mongoose, { Schema } from "mongoose";
+import { AvailableUserRoles } from "../constants.js";
 
 const userSchema = new Schema(
   {
@@ -12,6 +13,7 @@ const userSchema = new Schema(
         localPath: "",
       },
     },
+
     username: {
       type: String,
       required: true,
@@ -20,6 +22,7 @@ const userSchema = new Schema(
       trim: true,
       index: true,
     },
+
     email: {
       type: String,
       trim: true,
@@ -27,37 +30,42 @@ const userSchema = new Schema(
       required: true,
       unique: true,
     },
+
     fullName: {
       type: String,
       trim: true,
     },
+
     password: {
       type: String,
       required: [true, "password is required"],
     },
+
+    role: {
+      type: String,
+      enum: AvailableUserRoles,
+      default: "customer",
+    },
+
+    subscription: {
+      type: Schema.Types.ObjectId,
+      ref: "UserSubscription",
+    },
+
     isEmailVerified: {
       type: Boolean,
-      deefault: falses,
+      default: false,
     },
-    refreshToken: {
-      type: String,
-    },
-    forgotPasswordToken: {
-      type: String,
-    },
-    forgotPasswordExpiry: {
-      type: String,
-    },
-    emailVerificationToken: {
-      type: String,
-    },
-    emailVerificationExpiry: {
-      type: String,
-    },
+
+    refreshToken: String,
+    forgotPasswordToken: String,
+    forgotPasswordExpiry: Date,
+    emailVerificationToken: String,
+    emailVerificationExpiry: Date,
   },
   {
     timestamps: true,
-  },
+  }
 );
 
-export const user = mongoose.model("User", userSchema);
+export const User = mongoose.model("User", userSchema);
