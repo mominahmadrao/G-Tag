@@ -1,4 +1,5 @@
 import mongoose, { Schema, Model, mongo } from "mongoose";
+import { AvailableUserRoles } from "../utils/constants";
 
 const userSchema = new Schema(
   {
@@ -39,7 +40,12 @@ const userSchema = new Schema(
       type: Boolean,
       deefault: false,
     },
-    Subscription: {
+    role: {
+      type: String,
+      enum: AvailableUserRoles,
+      default: AvailableUserRoles.CUSTOMER,
+    },
+    subscription: {
       type: mongoose.Types.ObjectId,
       ref: "UserSubscription",
     },
