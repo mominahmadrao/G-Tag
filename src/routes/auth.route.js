@@ -2,6 +2,7 @@ import Router from "express";
 import {
   registeredUser,
   loginUser,
+  logoutUser,
   verifyEmail,
   refreshAccessToken,
   forgotPasswordRequest,
@@ -18,7 +19,7 @@ import {
   userForgotPasswordValidator,
   userResetForgotPasswordValidator,
 } from "../validators/validator.js";
-import { verifyJWT } from "../middlewares/authUser.middleware";
+import { verifyJWT } from "../middlewares/authUser.middleware.js";
 
 const router = Router();
 
@@ -31,9 +32,12 @@ router
      .route("/login").post(userLoginValidator(), validate, loginUser);
 
 router
-     .route("/verify-email/:verificationToken")
-     .get("/refreshToken")
-     .post(refreshAccessToken);
+  .route("/verify-email/:verificationToken")
+  .get(verifyEmail);
+
+router
+  .route("/refreshToken")
+  .post(refreshAccessToken);
 
 router
      .route("/forgot-password")
@@ -57,5 +61,5 @@ router
      .route("/resend-email-verification")
      .post(verifyJWT,resendEmailVerification)
 
-     
+
 export default router;    

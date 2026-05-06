@@ -70,52 +70,76 @@ G-TAG Backend is a modular API designed for managing an e-commerce platform with
 | POST | `/register` | Register user |
 | POST | `/login` | Login user |
 | POST | `/logout` | Logout (Secured) |
-| GET | `/me` | Get current user (Secured) |
+| GET | `/current-user` | Get current user (Secured) |
 | PATCH | `/change-password` | Change password (Secured) |
 | POST | `/refresh-token` | Refresh access token |
-
-#### Password Recovery
-| Method | Endpoint | Description |
-| :--- | :--- | :--- |
 | POST | `/forgot-password` | Request reset link |
-| POST | `/reset-password/:token`| Reset password |
-
-#### Email Verification
-| Method | Endpoint | Description |
-| :--- | :--- | :--- |
-| GET | `/verify-email/:token` | Verify email |
-| POST | `/resend-verification` | Resend verification email |
+| POST | `/reset-password/:resetToken`| Reset password |
+| GET | `/verify-email/:verificationToken` | Verify email |
+| POST | `/resend-email` | Resend verification email (Secured) |
 
 #### Users Routes (`/api/v1/users`)
 | Method | Endpoint | Access | Description |
 | :--- | :--- | :--- | :--- |
 | GET | `/me` | Customer | Get profile |
 | PATCH | `/me` | Customer | Update profile |
+| PATCH | `/me/password` | Customer | Update profile |
 | GET | `/` | Admin | Get all users |
 | DELETE | `/:id` | Admin | Delete user |
 
-#### Categories & Products
+#### Categories (`/api/v1/categories`)
 | Method | Endpoint | Description |
 | :--- | :--- | :--- |
-| GET | `/api/v1/categories` | List categories |
-| POST | `/api/v1/categories` | Create category (Admin) |
-| GET | `/api/v1/products` | Search/filter/sort products |
-| POST | `/api/v1/products` | Create product (Admin) |
+| GET |	`/`	| Retrieves all categories. Available to all users (public). |
+| GET |	`/:id` | Retrieves a single category and its metadata. |
+| POST | `/` | (Admin Only) Creates a new category (e.g., "Consoles", "Peripherals"). |
+| PUT/PATCH | `/:id` | (Admin Only) Updates category details. |
+| DELETE | `/:id` | (Admin Only) Deletes a category. Logic: Must check if products still belong to it before deletion. |
 
-#### Cart & Orders
+#### Product (`/api/v1/product`)
 | Method | Endpoint | Description |
 | :--- | :--- | :--- |
-| GET | `/api/v1/cart` | View cart |
-| POST | `/api/v1/cart/items` | Add items |
-| POST | `/api/v1/orders` | Place order |
-| PATCH | `/api/v1/orders/:id/status`| Update status (Admin) |
+| GET |	`/`	| Retrieves all products. Logically includes query params for searching and category filtering  |
+| GET |	`/:id` | Retrieves detailed information for a single product  |
+| GET |	`/featured` | Retrieves only featured products that active subscribers can access  |
+| POST | `/` | (Admin Only) Creates a new product. Logically validates category existence before saving. |
+| PATCH | `/:id` | (Admin Only) Updates product details. |
+| DELETE | `/:id` | (Admin Only) Removes a product from the catalog. |
 
-#### Payments & Subscriptions
+#### Cart (`/api/v1/cart`)
 | Method | Endpoint | Description |
 | :--- | :--- | :--- |
-| POST | `/api/v1/payments/process` | Process simulated payment |
-| GET | `/api/v1/subscriptions/plans` | View plans |
-| POST | `/api/v1/subscriptions/subscribe`| Purchase subscription |
+| GET |	`/`	| Retrieves the current user's cart. Logically populates product details like name and price.  |
+| POST |	`/items` | Adds a product to the cart. Logic: Checks if the requested quantity is available in stock   |
+| PATCH |	`/items:productId` | Updates the quantity of a specific item already in the cart.  |
+| DELETE | `/items:productId` | Removes a specific item from the cart. |
+| DELETE | `/` | Clears the entire cart (e.g., after an order is placed). |
+
+#### Order (`/api/v1/orders`)
+| Method | Endpoint | Description |
+| :--- | :--- | :--- |
+| POST |	`/`	| Converts the current cart into a permanent order. Logic: Snapshots prices and decrements product stock   |
+| GET |	`/my-orders` | Retrieves the order history for the currently authenticated customer  |
+| GET |	`/:id` | Retrieves full details of a specific order, including the snapshotted items.  |
+| GET | `/` | (Admin Only) Retrieves all orders in the system for fulfillment management. |
+| PATCH | `/:id/status` | (Admin Only) Updates the order status (e.g., from 'placed' to 'shipped'). |
+
+#### Payments (`/api/v1/payments`)
+| Method | Endpoint | Description |
+| :--- | :--- | :--- |
+| POST |	`/process`	|  Processes a payment for a specific order.  |
+| GET |	`/:orderId` | Retrieves detailed information for a single product  |
+| GET |	`/payment` | (Admin Only) Retrieves all transaction logs for financial auditing. |
+
+#### Subscription (`/api/v1/subscriptions`)
+| Method | Endpoint | Description |
+| :--- | :--- | :--- |
+| GET |	`/plans`	| Public route to view available tiers (Standard, Gamer, Gold).  |
+| POST |	`/plans` | (Admin Only) Creates a new plan template.  |
+| POST |	`/subscribe` | Subscribes the current user to a plan. Logically calculates the end_date   |
+| GET | `/me` | Shows the user's current active plan and remaining days . |
+| DELETE | `/cancel` |  Cancels auto-renewal but keeps benefits until end_date . |
+
 
 ---
 
@@ -133,7 +157,8 @@ G-TAG Backend is a modular API designed for managing an e-commerce platform with
 | **User Role** | `admin`, `customer` |
 | **Order Status** | `placed`, `shipped`, `delivered`, `cancelled` |
 | **Payment Status**| `pending`, `paid`, `failed` |
-| **Subscription** | `active`, `expired`, `cancelled` |
+| **Subscription Status** | `active`, `expired`, `cancelled` |
+| **Subscription Plans** | `standard`, `gamer`, `premium` |
 
 ---
 
@@ -141,6 +166,7 @@ G-TAG Backend is a modular API designed for managing an e-commerce platform with
 1. **Stock Control:** Prevent overselling via strict stock checks.
 2. **Order Snapshot:** Snapshot product data at order time to preserve history.
 3. **Dynamic Pricing:** Real-time cart price calculation.
+3. **Subscription Features:** Featured Product discounts that depend on user subscription plans.
 4. **Atomicity:** All-or-nothing order creation.
 5. **Validation:** Strict payment validation (amount + status).
 
