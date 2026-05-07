@@ -64,6 +64,12 @@ const subscriptionValidators = {
       .isFloat({ min: 0, max: 100 })
       .withMessage("Discount must be between 0 and 100"),
   ],
+  subscribe: [body("planId").isMongoId().withMessage("Invalid Plan ID format")],
 };
 
-export { cartValidators, orderValidators, paymentValidators, subscriptionValidators };
+export {
+  cartValidators,
+  orderValidators,
+  paymentValidators,
+  subscriptionValidators,
+};
