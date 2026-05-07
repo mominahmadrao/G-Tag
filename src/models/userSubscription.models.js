@@ -50,7 +50,7 @@ userSubscriptionSchema.pre("save", async function (next) {
   }
 });
 
-export const userSubscription = mongoose.model(
+export const UserSubscription = mongoose.model(
   "UserSubscription",
   userSubscription,
 );
