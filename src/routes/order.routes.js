@@ -9,7 +9,7 @@ import {
 import { orderValidators } from "../validators/index.uzair.js";
 import { validate } from "../middlewares/validate.middleware.js";
 import { verifyJWT } from "../middlewares/authUser.middleware.js";
-import { authorizeUserRole } from "../middlewares/authorize.middleware.js";
+import { authorizeRoles } from "../middlewares/authorize.middleware.js";
 import { UserRolesEnum } from "../utils/constants.js";
 
 const router = Router();
@@ -22,7 +22,7 @@ router.route("/:orderId").get(getOrderById);
 router.patch(
   "/:orderId/status",
   verifyJWT,
-  authorizeUserRole(UserRolesEnum.ADMIN), // Only admins can update status
+  authorizeRoles(UserRolesEnum.ADMIN), // Only admins can update status
   orderValidators.updateStatus, // Add a validator for the status enum
   validate,
   updateOrderStatus,
@@ -30,7 +30,7 @@ router.patch(
 
 router
   .route("/")
-  .get(verifyJWT, authorizeUserRole(UserRolesEnum.ADMIN), getAllOrders);
+  .get(verifyJWT, authorizeRoles(UserRolesEnum.ADMIN), getAllOrders);
 
 router.route("/").post(orderValidators.placeOrder, validate, placeOrder);
 
