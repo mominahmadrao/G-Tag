@@ -3,11 +3,12 @@ import {
   placeOrder,
   getMyOrders,
   getOrderById,
+  updateOrderStatus
 } from "../controllers/order.controllers.uzair.js";
 import { orderValidators } from "../validators/index.uzair.js";
-import { validate } from "../middleware/validate.middleware.js";
-import { verifyJWT } from "../middleware/authUser.middleware.js";
-import { authorizeUserRole } from "../middleware/authorize.middleware.js";
+import { validate } from "../middlewares/validate.middleware.js";
+import { verifyJWT } from "../middlewares/authUser.middleware.js";
+import { authorizeUserRole } from "../middlewares/authorize.middleware.js";
 import { UserRolesEnum } from "../utils/constants.js";
 
 const router = Router();

@@ -4,7 +4,7 @@ import {
   getMySubscription,
   cancelSubscription,
 } from "../controllers/userSubscription.controllers.uzair.js";
-import { verifyJWT } from "../middlewares/auth.middleware.js";
+import { verifyJWT } from "../middlewares/authUser.middleware.js";
 import { checkSubscriptionExpiry } from "../middlewares/subscriptionCheck.middleware.js";
 import { subscriptionValidators } from "../validators/index.uzair.js";
 import { validate } from "../middlewares/validate.middleware.js";
