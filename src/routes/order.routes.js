@@ -8,6 +8,7 @@ import { orderValidators } from "../validators/index.uzair.js";
 import { validate } from "../middleware/validate.middleware.js";
 import { verifyJWT } from "../middleware/authUser.middleware.js";
 import { authorizeUserRole } from "../middleware/authorize.middleware.js";
+import { UserRolesEnum } from "../utils/constants.js";
 
 const router = Router();
 
@@ -19,7 +20,7 @@ router.route("/:orderId").get(getOrderById);
 router.patch(
   "/:orderId/status",
   verifyJWT,
-  authorizeUserRole, // Only admins can update status
+  authorizeUserRole(UserRolesEnum.ADMIN), // Only admins can update status
   orderValidators.updateStatus, // Add a validator for the status enum
   validate,
   updateOrderStatus,
