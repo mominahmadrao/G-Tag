@@ -37,6 +37,7 @@ export const AvailablePaymentMethods = Object.values(PaymentMethodEnum);
 export const SubscriptionStatusEnum = {
   ACTIVE: "active",
   EXPIRED: "expired",
+  CANCELLED: "cancelled",
 };
 
 export const AvailableSubscriptionStatus = Object.values(
@@ -51,4 +52,3 @@ export const SubscriptionPlansEnum = {
 };
 
 export const AvailableSubscriptionPlans = Object.values(SubscriptionPlansEnum);
-
