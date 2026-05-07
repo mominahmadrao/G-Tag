@@ -32,4 +32,23 @@ const cartSchema = new mongoose.Schema(
   { timestamps: true },
 );
 
+cartSchema.methods.calculateTotalPrice = function () {
+  this.totalPrice = this.items.reduce((total, item) => {
+    return total + (item.productId.price * item.quantity);
+  }, 0);
+  return this.totalPrice;
+};
+
+cartSchema.methods.upsertItem = function (productId, quantity) {
+  const itemIndex = this.items.findIndex(
+    (item) => item.productId.toString() === productId.toString()
+  );
+
+  if (itemIndex > -1) {
+    this.items[itemIndex].quantity += quantity;
+  } else {
+    this.items.push({ productId, quantity });
+  }
+};
+
 export const cart = mongoose.Model("Cart", cartSchema);
