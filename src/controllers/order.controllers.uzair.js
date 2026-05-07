@@ -96,3 +96,25 @@ export const getOrderById = asyncHandler(async (req, res) => {
     .status(200)
     .json(new ApiResponse(200, order, "Order details retrieved"));
 });
+
+export const updateOrderStatus = asyncHandler(async (req, res) => {
+  const { orderId } = req.params;
+  const { status } = req.body;
+
+  const order = await Order.findById(orderId);
+
+  if (!order) {
+    throw new ApiError(404, "Order not found");
+  }
+
+  // Use the model method we just created
+  try {
+    await order.updateStatus(status);
+  } catch (error) {
+    throw new ApiError(400, error.message);
+  }
+
+  return res
+    .status(200)
+    .json(new ApiResponse(200, order, `Order status updated to ${status}`));
+});

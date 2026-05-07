@@ -62,4 +62,18 @@ const orderSchema = new Schema(
   },
 );
 
+orderSchema.methods.updateStatus = async function (newStatus) {
+  // Logic: Define forbidden transitions
+  if (this.orderStatus === OrderStatusEnum.DELIVERED) {
+    throw new Error("Cannot change status of a delivered order");
+  }
+
+  if (this.orderStatus === OrderStatusEnum.CANCELLED) {
+    throw new Error("Cannot change status of a cancelled order");
+  }
+
+  this.orderStatus = newStatus;
+  return this.save();
+};
+
 export const Order = mongoose.model("Order", orderSchema);
