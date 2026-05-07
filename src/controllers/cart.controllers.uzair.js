@@ -95,4 +95,33 @@ const clearCart = asyncHandler(async (req, res) => {
     .json(new ApiResponse(200, {}, "Cart cleared successfully"));
 });
 
-export { addItemToCart, getCart, removeItemFromCart, clearCart };
+const updateCartItemQuantity = asyncHandler(async (req, res) => {
+  const { productId } = req.params;
+  const { quantity } = req.body;
+
+  const cart = await Cart.findOne({ userId: req.user._id });
+  if (!cart) throw new ApiError(404, "Cart not found");
+
+  const itemIndex = cart.items.findIndex(
+    (item) => item.productId.toString() === productId,
+  );
+  if (itemIndex === -1) throw new ApiError(404, "Item not found in cart");
+
+  cart.items[itemIndex].quantity = quantity;
+
+  await cart.populate("items.productId");
+  await cart.calculateTotalPrice(); // Assumes the discount logic we added earlier
+  await cart.save();
+
+  return res
+    .status(200)
+    .json(new ApiResponse(200, cart, "Cart quantity updated"));
+});
+
+export {
+  addItemToCart,
+  getCart,
+  removeItemFromCart,
+  clearCart,
+  updateCartItemQuantity,
+};
