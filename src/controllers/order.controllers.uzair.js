@@ -118,3 +118,10 @@ export const updateOrderStatus = asyncHandler(async (req, res) => {
     .status(200)
     .json(new ApiResponse(200, order, `Order status updated to ${status}`));
 });
+
+export const getAllOrders = asyncHandler(async (req, res) => {
+  const orders = await Order.find().populate("customer", "name email");
+  return res
+    .status(200)
+    .json(new ApiResponse(200, orders, "All orders retrieved for admin"));
+});

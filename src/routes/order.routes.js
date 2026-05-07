@@ -27,6 +27,8 @@ router.patch(
   updateOrderStatus,
 );
 
+router.route("/").get(verifyJWT, authorizeUserRole(UserRolesEnum.ADMIN), getAllOrders);
+
 router.route("/").post(orderValidators.placeOrder, validate, placeOrder);
 
 export default router;
