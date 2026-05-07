@@ -2,7 +2,7 @@ import { Router } from "express";
 import {
   createPlan,
   getAllPlans,
-} from "../controllers/subscriptionPlans.controllers.uzair.js";
+} from "../controllers/subscriptionPlan.controllers.uzair.js";
 import { subscriptionValidators } from "../validators/index.uzair.js";
 import { validate } from "../middlewares/validate.middleware.js";
 import { verifyJWT } from "../middlewares/auth.middleware.js";
