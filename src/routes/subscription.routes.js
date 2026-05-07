@@ -14,11 +14,12 @@ const router = Router();
 // Global check to check Expiry
 router.use(verifyJWT, checkSubscriptionExpiry);
 
+router.route("/me").get(getMySubscription);
+
 router
   .route("/subscribe")
   .post(subscriptionValidators.subscribe, validate, subscribeToPlan);
 
-router.route("/status").get(getMySubscription);
-router.route("/cancel").patch(cancelSubscription);
+router.route("/cancel").delete(cancelSubscription);
 
 export default router;
