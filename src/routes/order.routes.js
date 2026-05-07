@@ -18,19 +18,15 @@ router.use(verifyJWT);
 
 router.route("/my-orders").get(getMyOrders);
 router.route("/:orderId").get(getOrderById);
-// Add checkRole middleware (from your security logic)
 router.patch(
   "/:orderId/status",
-  verifyJWT,
-  authorizeRoles(UserRolesEnum.ADMIN), // Only admins can update status
-  orderValidators.updateStatus, // Add a validator for the status enum
+  authorizeRoles(UserRolesEnum.ADMIN),
+  orderValidators.updateStatus,
   validate,
   updateOrderStatus,
 );
 
-router
-  .route("/")
-  .get(verifyJWT, authorizeRoles(UserRolesEnum.ADMIN), getAllOrders);
+router.route("/").get(authorizeRoles(UserRolesEnum.ADMIN), getAllOrders);
 
 router.route("/").post(orderValidators.placeOrder, validate, placeOrder);
 

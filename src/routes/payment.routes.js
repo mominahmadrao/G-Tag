@@ -20,7 +20,7 @@ router
 
 router
   .route("/payment")
-  .get(verifyJWT, authorizeRoles(UserRolesEnum.ADMIN), getAllPayments);
-router.route("/:orderId").get(verifyJWT, getPaymentDetails);
+  .get(authorizeRoles(UserRolesEnum.ADMIN), getAllPayments);
+router.route("/:orderId").get(getPaymentDetails);
 
 export default router;
