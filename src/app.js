@@ -28,9 +28,11 @@ app.use(
 import { healthcheck } from "./controllers/healthcheck.controller.js";
 import authRouter from "./routes/auth.route.js";
 import userRouter from "./routes/users.route.js";
+import categoryRouter from "./routes/category.route.js";
 
 app.use("/api/v1/healthcheck", healthcheck);
 app.use("/api/v1/auth", authRouter);
 app.use("/api/v1/users", userRouter);
+app.use("/api/v1/categories", categoryRouter);
 
 export default app;

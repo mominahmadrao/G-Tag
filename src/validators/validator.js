@@ -1,6 +1,10 @@
-import { body } from "express-validator";
+import { body,param } from "express-validator";
 import { AvailableUserRoles } from "../utils/constants.js";
 import mongoose from "mongoose";
+
+
+// User
+
 
 const userRegisterValidator = () => {
   return [
@@ -84,6 +88,27 @@ const userResetForgotPasswordValidator = () => {
 };
 
 
+// Category
+
+
+const createCategoryValidator = () => [
+  body("name")
+    .notEmpty()
+    .withMessage("Category name is required")
+    .isLength({ min: 2 })
+    .withMessage("Category name too short"),
+];
+
+const updateCategoryValidator = () => [
+  body("name")
+    .optional()
+    .isLength({ min: 2 })
+    .withMessage("Category name too short"),
+];
+
+const categoryIdValidator = () => [
+  param("id").isMongoId().withMessage("Invalid category ID"),
+];
 
 
 export {
@@ -91,5 +116,9 @@ export {
   userLoginValidator,
   userChangeCurrentPassswordValidator,
   userForgotPasswordValidator,
-  userResetForgotPasswordValidator
+  userResetForgotPasswordValidator,
+  createCategoryValidator,
+  updateCategoryValidator,
+  categoryIdValidator
 }
+
