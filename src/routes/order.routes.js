@@ -3,7 +3,8 @@ import {
   placeOrder,
   getMyOrders,
   getOrderById,
-  updateOrderStatus
+  updateOrderStatus,
+  getAllOrders,
 } from "../controllers/order.controllers.uzair.js";
 import { orderValidators } from "../validators/index.uzair.js";
 import { validate } from "../middlewares/validate.middleware.js";
@@ -27,7 +28,9 @@ router.patch(
   updateOrderStatus,
 );
 
-router.route("/").get(verifyJWT, authorizeUserRole(UserRolesEnum.ADMIN), getAllOrders);
+router
+  .route("/")
+  .get(verifyJWT, authorizeUserRole(UserRolesEnum.ADMIN), getAllOrders);
 
 router.route("/").post(orderValidators.placeOrder, validate, placeOrder);
 

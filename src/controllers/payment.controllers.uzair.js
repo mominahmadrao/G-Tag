@@ -53,3 +53,22 @@ export const processPayment = asyncHandler(async (req, res) => {
       ),
     );
 });
+
+export const getPaymentDetails = asyncHandler(async (req, res) => {
+  const { orderId } = req.params;
+  const payment = await Payment.findOne({ orderId, customerId: req.user._id });
+
+  if (!payment) throw new ApiError(404, "Payment record not found");
+  return res
+    .status(200)
+    .json(new ApiResponse(200, payment, "Payment details retrieved"));
+});
+
+export const getAllPayments = asyncHandler(async (req, res) => {
+  const payments = await Payment.find().populate("customerId", "name email");
+  return res
+    .status(200)
+    .json(
+      new ApiResponse(200, payments, "Transaction logs retrieved for auditing"),
+    );
+});
