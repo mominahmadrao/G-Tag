@@ -1,4 +1,5 @@
 import { body, param } from "express-validator";
+import { PaymentMethodEnum } from "../utils/constants.js";
 
 const cartValidators = {
   addItem: [
@@ -18,4 +19,18 @@ const cartValidators = {
   ],
 };
 
-export { cartValidators };
+const orderValidators = {
+  placeOrder: [
+    body("shippingAddress")
+      .trim()
+      .notEmpty()
+      .withMessage("Shipping address is required"),
+    body("paymentMethod")
+      .notEmpty()
+      .withMessage("Payment method is required")
+      .isIn(Object.values(PaymentMethodEnum))
+      .withMessage("Invalid payment method"),
+  ],
+};
+
+export { cartValidators, orderValidators };
