@@ -18,6 +18,12 @@ const cartValidators = {
   removeItem: [
     param("productId").isMongoId().withMessage("Invalid Product ID format"),
   ],
+  updateItem: [
+    param("productId").isMongoId().withMessage("Invalid Product ID"),
+    body("quantity")
+      .isInt({ min: 1 })
+      .withMessage("Quantity must be at least 1"),
+  ],
 };
 
 const orderValidators = {
