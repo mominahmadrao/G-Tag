@@ -32,10 +32,17 @@ const cartSchema = new mongoose.Schema(
   { timestamps: true },
 );
 
-cartSchema.methods.calculateTotalPrice = function () {
-  this.totalPrice = this.items.reduce((total, item) => {
+cartSchema.methods.calculateTotalPrice = async function (discountPercent = 0) {
+  // Calculate the base price of all items
+  const baseTotal = this.items.reduce((total, item) => {
     return total + item.productId.price * item.quantity;
   }, 0);
+
+  // Apply discount if the user has an active premium/gamer plan
+  const discountAmount = (baseTotal * discountPercent) / 100;
+
+  this.totalPrice = baseTotal - discountAmount;
+
   return this.totalPrice;
 };
 

@@ -2,6 +2,7 @@ import { ApiError } from "../utils/apiError.js";
 import { ApiResponse } from "../utils/apiResponse.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
 import { Cart } from "../models/carts.models.js";
+import { User } from "../models/users.models.js";
 
 const addItemToCart = asyncHandler(async (req, res) => {
   const { productId, quantity } = req.body;
@@ -26,20 +27,38 @@ const addItemToCart = asyncHandler(async (req, res) => {
 });
 
 const getCart = asyncHandler(async (req, res) => {
-  const cart = await Cart.findOne({ userId: req.user._id }).populate(
-    "items.productId",
-  );
+  const userId = req.user._id;
 
-  if (!cart) {
-    throw new ApiError(404, "Cart not found");
+  // Find cart and populate products
+  const cart = await Cart.findOne({ userId }).populate("items.productId");
+  if (!cart) throw new ApiError(404, "Cart not found");
+
+  // FETCH DISCOUNT: Check if user has an active subscription
+  const user = await User.findById(userId).populate({
+    path: "subscription",
+    populate: { path: "plan" },
+  });
+
+  let discount = 0;
+  if (user.subscription && user.subscription.status === "active") {
+    discount = user.subscription.plan.discountPercentage || 0;
   }
 
-  cart.calculateTotalPrice();
+  // Pass that discount to your model method
+  await cart.calculateTotalPrice(discount);
   await cart.save();
 
   return res
     .status(200)
-    .json(new ApiResponse(200, cart, "Cart retrieved successfully"));
+    .json(
+      new ApiResponse(
+        200,
+        cart,
+        discount > 0
+          ? `Cart retrieved with ${discount}% subscription discount!`
+          : "Cart retrieved successfully",
+      ),
+    );
 });
 
 const removeItemFromCart = asyncHandler(async (req, res) => {
