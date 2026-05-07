@@ -1,5 +1,6 @@
 import { body, param } from "express-validator";
 import { PaymentMethodEnum } from "../utils/constants.js";
+import { SubscriptionPlansEnum } from "../utils/constants.js";
 
 const cartValidators = {
   addItem: [
@@ -47,4 +48,22 @@ const paymentValidators = {
   ],
 };
 
-export { cartValidators, orderValidators, paymentValidators };
+const subscriptionValidators = {
+  createPlan: [
+    body("name")
+      .isIn(Object.values(SubscriptionPlansEnum))
+      .withMessage("Invalid plan name. Must be Standard, Gamer, or Premium"),
+    body("price")
+      .isFloat({ min: 0 })
+      .withMessage("Price must be a positive number"),
+    body("durationInDays")
+      .isInt({ min: 1 })
+      .withMessage("Duration must be at least 1 day"),
+    body("discountPercentage")
+      .optional()
+      .isFloat({ min: 0, max: 100 })
+      .withMessage("Discount must be between 0 and 100"),
+  ],
+};
+
+export { cartValidators, orderValidators, paymentValidators, subscriptionValidators };
