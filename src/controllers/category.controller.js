@@ -5,18 +5,20 @@ import { asyncHandler } from "../utils/asyncHandler.js";
 import { ApiError } from "../utils/apiError.js";
 
 const getAllCategories = asyncHandler(async (req, res) => {
-  const categories = await Category.find().populate("createdBy", "username email");
+  const categories = await Category.find().populate(
+    "createdBy",
+    "username email",
+  );
 
   return res
     .status(200)
     .json(new ApiResponse(200, categories, "Categories fetched successfully"));
 });
 
-
 const getCategoryById = asyncHandler(async (req, res) => {
   const category = await Category.findById(req.params.id).populate(
     "createdBy",
-    "username email"
+    "username email",
   );
 
   if (!category) {
@@ -28,9 +30,7 @@ const getCategoryById = asyncHandler(async (req, res) => {
     .json(new ApiResponse(200, category, "Category fetched successfully"));
 });
 
-
 // ADMIN
-
 
 const createCategory = asyncHandler(async (req, res) => {
   const { name, description } = req.body;
@@ -44,14 +44,13 @@ const createCategory = asyncHandler(async (req, res) => {
   const category = await Category.create({
     name,
     description,
-    createdBy: req.user._id,  
+    createdBy: req.user._id,
   });
 
   return res
     .status(201)
     .json(new ApiResponse(201, category, "Category created successfully"));
 });
-
 
 const updateCategory = asyncHandler(async (req, res) => {
   const category = await Category.findById(req.params.id);
@@ -70,7 +69,6 @@ const updateCategory = asyncHandler(async (req, res) => {
     .json(new ApiResponse(200, category, "Category updated successfully"));
 });
 
-
 const deleteCategory = asyncHandler(async (req, res) => {
   const category = await Category.findById(req.params.id);
 
@@ -81,10 +79,7 @@ const deleteCategory = asyncHandler(async (req, res) => {
   const productExists = await Product.findOne({ category: category._id });
 
   if (productExists) {
-    throw new ApiError(
-      400,
-      "Cannot delete category with existing products"
-    );
+    throw new ApiError(400, "Cannot delete category with existing products");
   }
 
   await category.deleteOne();
@@ -94,11 +89,10 @@ const deleteCategory = asyncHandler(async (req, res) => {
     .json(new ApiResponse(200, null, "Category deleted successfully"));
 });
 
-
 export {
-    createCategory,
-    getAllCategories,
-    getCategoryById,
-    updateCategory,
-    deleteCategory
+  createCategory,
+  getAllCategories,
+  getCategoryById,
+  updateCategory,
+  deleteCategory,
 };
