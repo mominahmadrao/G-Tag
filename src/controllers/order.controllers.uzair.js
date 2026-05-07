@@ -59,3 +59,40 @@ export const placeOrder = asyncHandler(async (req, res) => {
     .status(201)
     .json(new ApiResponse(201, order, "Order placed successfully"));
 });
+
+export const getMyOrders = asyncHandler(async (req, res) => {
+  const userId = req.user._id;
+
+  // Find all orders for this user and sort by newest first
+  const orders = await Order.find({ customer: userId }).sort({ createdAt: -1 });
+
+  if (!orders || orders.length === 0) {
+    return res
+      .status(200)
+      .json(new ApiResponse(200, [], "No orders found for this user"));
+  }
+
+  return res
+    .status(200)
+    .json(new ApiResponse(200, orders, "Order history retrieved successfully"));
+});
+
+export const getOrderById = asyncHandler(async (req, res) => {
+  const { orderId } = req.params;
+
+  const order = await Order.findOne({
+    _id: orderId,
+    customer: req.user._id,
+  });
+
+  if (!order) {
+    throw new ApiError(
+      404,
+      "Order not found or you do not have permission to view it",
+    );
+  }
+
+  return res
+    .status(200)
+    .json(new ApiResponse(200, order, "Order details retrieved"));
+});
