@@ -33,4 +33,18 @@ const orderValidators = {
   ],
 };
 
-export { cartValidators, orderValidators };
+const paymentValidators = {
+  processPayment: [
+    body("orderId").isMongoId().withMessage("Invalid Order ID"),
+    body("amount")
+      .isFloat({ min: 0.01 })
+      .withMessage("Amount must be greater than 0"),
+    body("paymentMethod")
+      .notEmpty()
+      .withMessage("Payment method is required")
+      .isIn(Object.values(PaymentMethodEnum))
+      .withMessage("Invalid payment method"),
+  ],
+};
+
+export { cartValidators, orderValidators, paymentValidators };
