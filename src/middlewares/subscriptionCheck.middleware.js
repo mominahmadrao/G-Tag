@@ -7,7 +7,7 @@ export const checkSubscriptionExpiry = asyncHandler(async (req, res, next) => {
 
   const sub = await UserSubscription.findById(req.user.subscription);
 
-  if (sub && sub.status === SubscriptionStatusEnum.ACTIVE) {
+  if (sub && sub.status !== SubscriptionStatusEnum.EXPIRED) {
     const now = new Date();
 
     // If current time is greater than expiry date

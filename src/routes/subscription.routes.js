@@ -7,7 +7,7 @@ import {
 import { verifyJWT } from "../middlewares/authUser.middleware.js";
 import { checkSubscriptionExpiry } from "../middlewares/subscriptionCheck.middleware.js";
 import { subscriptionValidators } from "../validators/index.uzair.js";
-import { validate } from "../middlewares/validate.middleware.js";
+import { validate } from "../middlewares/validator.middleware.js";
 
 const router = Router();
 

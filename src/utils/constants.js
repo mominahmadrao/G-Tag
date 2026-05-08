@@ -28,7 +28,6 @@ export const AvailablePaymentStatus = Object.values(PaymentStatusEnum);
 // Payments Methods
 export const PaymentMethodEnum = {
   CREDIT_CARD: "card",
-  PAYPAL: "paypal",
   CASH_ON_DELIVERY: "cod",
 };
 export const AvailablePaymentMethods = Object.values(PaymentMethodEnum);

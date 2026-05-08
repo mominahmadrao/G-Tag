@@ -1,4 +1,4 @@
-import mongoose, { model, Schema } from "mongoose";
+import mongoose, { Schema } from "mongoose";
 
 const productSchema = new Schema(
   {
@@ -9,30 +9,53 @@ const productSchema = new Schema(
       trim: true,
       index: true,
     },
+
     description: {
       type: String,
       required: true,
       trim: true,
     },
+
     price: {
       type: Number,
       required: true,
       min: 0,
     },
+
     category: {
       type: Schema.Types.ObjectId,
       ref: "Category",
       required: true,
     },
+
     stock: {
       type: Number,
       required: true,
       min: 0,
     },
-    // for premium users
+
+    // Product Images
+    images: [
+      {
+        url: {
+          type: String,
+          default: "https://placehold.co/600x400",
+          trim: true,
+        },
+      },
+    ],
+
+    // Premium / Featured products
     isFeatured: {
       type: Boolean,
       default: false,
+    },
+
+    // Admin who created product
+    createdBy: {
+      type: Schema.Types.ObjectId,
+      ref: "User",
+      required: true,
     },
   },
   {
@@ -40,4 +63,4 @@ const productSchema = new Schema(
   },
 );
 
-const Product = mongoose.model("Product", productSchema);
+export const Product = mongoose.model("Product", productSchema);

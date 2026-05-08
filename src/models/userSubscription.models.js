@@ -1,6 +1,6 @@
 import mongoose, { Schema } from "mongoose";
 import { SubscriptionStatusEnum } from "../utils/constants.js";
-import {ApiError} from "../utils/apiError.js";
+import { ApiError } from "../utils/apiError.js";
 
 const userSubscriptionSchema = new Schema(
   {
@@ -16,7 +16,7 @@ const userSubscriptionSchema = new Schema(
       required: true,
     },
     startDate: { type: Date, default: Date.now },
-    endDate: { type: Date, required: true },
+    endDate: { type: Date },
     status: {
       type: String,
       enum: Object.values(SubscriptionStatusEnum), // active, expired
@@ -26,8 +26,8 @@ const userSubscriptionSchema = new Schema(
   { timestamps: true },
 );
 
-userSubscriptionSchema.pre("save", async function (next) {
-  if (!this.isModified("plan")) return next();
+userSubscriptionSchema.pre("save", async function () {
+  if (!this.isModified("plan")) return;
 
   try {
     const SubscriptionPlan = mongoose.model("SubscriptionPlan");
@@ -44,7 +44,6 @@ userSubscriptionSchema.pre("save", async function (next) {
     );
     this.endDate = expirationDate;
 
-    next();
   } catch (error) {
     next(error);
   }
@@ -52,5 +51,5 @@ userSubscriptionSchema.pre("save", async function (next) {
 
 export const UserSubscription = mongoose.model(
   "UserSubscription",
-  userSubscription,
+  userSubscriptionSchema,
 );

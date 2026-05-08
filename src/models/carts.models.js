@@ -58,4 +58,4 @@ cartSchema.methods.upsertItem = function (productId, quantity) {
   }
 };
 
-export const Cart = mongoose.Model("Cart", cartSchema);
+export const Cart = mongoose.model("Cart", cartSchema);

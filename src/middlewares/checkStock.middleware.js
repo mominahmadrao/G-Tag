@@ -1,9 +1,10 @@
-import { Product } from "../models/product.model.js";
+import { Product } from "../models/products.models.js";
 import { ApiError } from "../utils/apiError.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
 
 export const checkProductStock = asyncHandler(async (req, res, next) => {
-  const { productId, quantity } = req.body;
+  const { quantity } = req.body;
+  const productId = req.params.productId || req.body.productId;
 
   const product = await Product.findById(productId);
 

@@ -40,7 +40,7 @@ const getCart = asyncHandler(async (req, res) => {
   });
 
   let discount = 0;
-  if (user.subscription && user.subscription.status === "active") {
+  if (user.subscription && user.subscription.status !== "expired") {
     discount = user.subscription.plan.discountPercentage || 0;
   }
 

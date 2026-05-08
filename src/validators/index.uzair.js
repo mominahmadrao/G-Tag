@@ -38,6 +38,12 @@ const orderValidators = {
       .isIn(Object.values(PaymentMethodEnum))
       .withMessage("Invalid payment method"),
   ],
+  updateStatus: [
+    body("status")
+      .notEmpty()
+      .isIn(["pending", "shipped", "delivered", "cancelled"]) // or use your Enum
+      .withMessage("Invalid status update"),
+  ],
 };
 
 const paymentValidators = {
