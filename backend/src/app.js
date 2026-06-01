@@ -44,20 +44,20 @@ app.use("/api/v1/payments", paymentRouter);
 app.use("/api/v1/subscriptions/plans", subscriptionPlanRouter);
 app.use("/api/v1/subscriptions", subscriptionRouter);
 
-// app.use((err, req, res, next) => {
-//   if (err instanceof ApiError) {
-//     return res.status(err.statusCode).json({
-//       success: err.success,
-//       message: err.message,
-//       errors: err.errors,
-//       stack: process.env.NODE_ENV === "development" ? err.stack : undefined,
-//     });
-//   }
+app.use((err, req, res, next) => {
+  if (err instanceof ApiError) {
+    return res.status(err.statusCode).json({
+      success: err.success,
+      message: err.message,
+      errors: err.errors,
+      stack: process.env.NODE_ENV === "development" ? err.stack : undefined,
+    });
+  }
 
-//   return res.status(500).json({
-//     success: false,
-//     message: "Internal Server Error",
-//   });
-// });
+  return res.status(500).json({
+    success: false,
+    message: "Internal Server Error",
+  });
+});
 
 export default app;

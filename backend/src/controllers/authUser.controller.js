@@ -63,7 +63,7 @@ const registeredUser = asyncHandler(async (req, res) => {
     subject: "Please verify your email",
     mailgenContent: emailVerificationMailgenContent(
       user.username,
-      `${req.protocol}://${req.get("host")}/api/v1/users/verify-email/${unHashedToken}`, // Dynamic link
+      `http://localhost:5173/verify-email/${unHashedToken}`, // Dynamic link
     ),
   });
 
@@ -108,6 +108,10 @@ const loginUser = asyncHandler(async (req, res) => {
     throw new ApiError(400, "Invalid credentials");
   }
 
+  if (!user.isEmailVerified) {
+    throw new ApiError(403, "Please verify your email before logging in. Check your inbox.");
+  }
+
   const { accessToken, refreshToken } = await generateAccessAndRefreshTokens(
     user._id,
   );
@@ -119,7 +123,7 @@ const loginUser = asyncHandler(async (req, res) => {
 
   const options = {
     httpOnly: true,
-    secure: true,
+    secure: false,
   };
 
   // res.cookie(name, value, options)
@@ -157,7 +161,7 @@ const logoutUser = asyncHandler(async (req, res) => {
 
   const options = {
     httpOnly: true,
-    secure: true,
+    secure: false,
   };
   // res.clearCookie(name, options);
   return res
@@ -232,7 +236,7 @@ const resendEmailVerification = asyncHandler(async (req, res) => {
     subject: "Please verify your email",
     mailgenContent: emailVerificationMailgenContent(
       user.username,
-      `${req.protocol}://${req.get("host")}/api/v1/users/verify-email/${unHashedToken}`, // Dynamic link
+      `http://localhost:5173/verify-email/${unHashedToken}`, // Dynamic link
     ),
   });
 
@@ -266,7 +270,7 @@ const refreshAccessToken = asyncHandler(async (req, res) => {
 
     const options = {
       httpOnly: true,
-      secure: true,
+      secure: false,
     };
 
     // change 'refreshtoken' attribute name to 'newrefreshToken' in object

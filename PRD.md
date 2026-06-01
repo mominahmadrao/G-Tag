@@ -85,6 +85,7 @@ G-TAG Backend is a modular API designed for managing an e-commerce platform with
 | PATCH | `/me` | Customer | Update profile |
 | PATCH | `/me/password` | Customer | Update profile |
 | GET | `/` | Admin | Get all users |
+| GET | `/:id` | Admin | GET user by id |
 | DELETE | `/:id` | Admin | Delete user |
 
 #### Categories (`/api/v1/categories`)
