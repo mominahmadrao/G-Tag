@@ -33,7 +33,7 @@ const generateAccessAndRefreshTokens = async (userId) => {
 
 // Register
 const registeredUser = asyncHandler(async (req, res) => {
-  const { email, username, password, role } = req.body;
+  const { email, username, password, fullName } = req.body;
 
   const existedUser = await User.findOne({
     $or: [{ username }, { email }],
@@ -47,6 +47,7 @@ const registeredUser = asyncHandler(async (req, res) => {
     email,
     username,
     password,
+    fullName,
     isEmailVerified: false,
   });
 
@@ -63,7 +64,7 @@ const registeredUser = asyncHandler(async (req, res) => {
     subject: "Please verify your email",
     mailgenContent: emailVerificationMailgenContent(
       user.username,
-      `http://localhost:5173/verify-email/${unHashedToken}`, // Dynamic link
+      `${process.env.VERIFY_EMAIL_REDIRECT_URL || "http://localhost:5173/verify-email"}/${unHashedToken}`,
     ),
   });
 
@@ -236,7 +237,7 @@ const resendEmailVerification = asyncHandler(async (req, res) => {
     subject: "Please verify your email",
     mailgenContent: emailVerificationMailgenContent(
       user.username,
-      `http://localhost:5173/verify-email/${unHashedToken}`, // Dynamic link
+      `${process.env.VERIFY_EMAIL_REDIRECT_URL || "http://localhost:5173/verify-email"}/${unHashedToken}`,
     ),
   });
 
@@ -316,7 +317,7 @@ const forgotPasswordRequest = asyncHandler(async (req, res) => {
     subject: "Password reset request",
     mailgenContent: forgotPasswordMailgenContent(
       user.username,
-      `${process.env.FORGOT_PASSWORD_REDIRECT_URL}/${unHashedToken}`,
+      `${process.env.FORGOT_PASSWORD_REDIRECT_URL || "http://localhost:5173/reset-password"}/${unHashedToken}`,
     ),
   });
 
@@ -361,6 +362,53 @@ const resetForgetPasword = asyncHandler(async (req, res) => {
     .json(new ApiResponse(200, {}, "Password reset successfully"));
 });
 
+const checkEmailVerified = asyncHandler(async (req, res) => {
+  const { email } = req.params;
+  const user = await User.findOne({ email }).select("isEmailVerified");
+  if (!user) {
+    throw new ApiError(404, "User not found");
+  }
+  return res.status(200).json(
+    new ApiResponse(200, { isVerified: user.isEmailVerified }, "Email status fetched"),
+  );
+});
+
+const resendVerificationPublic = asyncHandler(async (req, res) => {
+  const { email } = req.body;
+  if (!email) {
+    throw new ApiError(400, "Email is required");
+  }
+
+  const user = await User.findOne({ email });
+  if (!user) {
+    throw new ApiError(404, "User not found");
+  }
+  if (user.isEmailVerified) {
+    throw new ApiError(409, "Email is already verified");
+  }
+
+  const { unHashedToken, hashedToken, tokenExpiry } =
+    user.generateTemporaryToken();
+
+  user.emailVerificationToken = hashedToken;
+  user.emailVerificationExpiry = tokenExpiry;
+
+  await user.save({ validateBeforeSave: false });
+
+  await sendEmail({
+    email: user.email,
+    subject: "Please verify your email",
+    mailgenContent: emailVerificationMailgenContent(
+      user.username,
+      `${process.env.VERIFY_EMAIL_REDIRECT_URL || "http://localhost:5173/verify-email"}/${unHashedToken}`,
+    ),
+  });
+
+  return res.status(200).json(
+    new ApiResponse(200, {}, "Verification email has been resent"),
+  );
+});
+
 const changeCurrentPassword = asyncHandler(async (req, res) => {
   const { oldPassword, newPassword } = req.body;
 
@@ -390,4 +438,6 @@ export {
   forgotPasswordRequest,
   resetForgetPasword,
   changeCurrentPassword,
+  checkEmailVerified,
+  resendVerificationPublic,
 };

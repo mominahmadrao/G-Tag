@@ -12,7 +12,7 @@ export const AuthProvider = ({ children }) => {
     const fetchUser = async () => {
       try {
         const res = await getMe();
-        setUser(res.data.user);
+        setUser(res.data.data);
       } catch (error) {
         setUser(null);
       } finally {
@@ -27,9 +27,10 @@ export const AuthProvider = ({ children }) => {
 
   const login = async (email, password) => {
     await loginUser({ email, password });
-    //  after login fetch user from backend
     const res = await getMe();
-    setUser(res.data.user);
+    const userData = res.data.data;
+    setUser(userData);
+    return userData;
   };
 
   // Register

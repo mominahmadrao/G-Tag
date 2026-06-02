@@ -10,6 +10,8 @@ import {
   getCurrentUser,
   changeCurrentPassword,
   resendEmailVerification,
+  checkEmailVerified,
+  resendVerificationPublic,
 } from "../controllers/authUser.controller.js";
 import { validate } from "../middlewares/validator.middleware.js";
 import {
@@ -38,6 +40,14 @@ router
 router
   .route("/refreshToken")
   .post(refreshAccessToken);
+
+router
+  .route("/email-status/:email")
+  .get(checkEmailVerified);
+
+router
+  .route("/resend-verification-public")
+  .post(resendVerificationPublic);
 
 router
      .route("/forgot-password")

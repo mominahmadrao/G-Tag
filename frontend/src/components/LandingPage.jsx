@@ -1,4 +1,6 @@
 import React, { useState } from "react";
+import { Link } from "react-router-dom";
+import { useAuth } from "../context/AuthContext/Authcontext.jsx";
 import { 
   ShoppingCart, 
   User, 
@@ -18,6 +20,7 @@ import {
 } from "lucide-react";
 
 export default function LandingPage() {
+  const { user } = useAuth();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [cartCount, setCartCount] = useState(0);
   const [activeProductTab, setActiveProductTab] = useState("all");
@@ -195,10 +198,20 @@ export default function LandingPage() {
               </span>
             </button>
 
-            {/* User Profile avatar outline */}
-            <a href="/login" className="p-2 border border-white/20 hover:border-white/50 rounded-full hover:bg-white/10 transition-all cursor-pointer">
-              <User className="h-4 w-4" />
-            </a>
+            {/* User Profile / Dashboard Link */}
+            {user ? (
+              <Link
+                to="/account"
+                className="flex items-center gap-2 p-1.5 px-3 border border-white/20 hover:border-white/50 rounded-full hover:bg-white/10 transition-all text-sm font-semibold"
+              >
+                <User className="h-4 w-4 text-lime-400" />
+                <span className="max-w-[100px] truncate">{user.username}</span>
+              </Link>
+            ) : (
+              <Link to="/login" className="p-2 border border-white/20 hover:border-white/50 rounded-full hover:bg-white/10 transition-all cursor-pointer block">
+                <User className="h-4 w-4" />
+              </Link>
+            )}
 
             {/* Mobile Menu Button */}
             <button 

@@ -14,6 +14,7 @@ export default function SignUpForm() {
   const { register } = useAuth();
 
   const [formData, setFormData] = useState({
+    fullName: "",
     username: "",
     email: "",
     password: "",
@@ -36,7 +37,7 @@ export default function SignUpForm() {
       setLoading(true);
 
       await register(formData);
-      navigate("/login");
+      navigate(`/verify-email-sent?email=${encodeURIComponent(formData.email)}`);
     } catch (err) {
       console.log(err);
       if (err.response?.data?.errors?.length > 0) {
@@ -73,6 +74,22 @@ export default function SignUpForm() {
           </div>
         )}
         <form onSubmit={handleSubmit} className="space-y-5">
+          {/* Full Name */}
+          <div className="space-y-3">
+            <Label htmlFor="fullName" className="text-blue-200">
+              Full Name
+            </Label>
+            <Input
+              id="fullName"
+              name="fullName"
+              type="text"
+              placeholder="John Doe"
+              value={formData.fullName}
+              onChange={handleChange}
+              className="h-11 bg-white/5 border border-white/10 text-white placeholder:text-white/40 focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500"
+            />
+          </div>
+
           {/* Username */}
           <div className="space-y-3">
             <Label htmlFor="username" className="text-blue-200">
@@ -82,7 +99,7 @@ export default function SignUpForm() {
               id="username"
               name="username"
               type="text"
-              placeholder="John"
+              placeholder="johndoe"
               value={formData.username}
               onChange={handleChange}
               className="h-11 bg-white/5 border border-white/10 text-white placeholder:text-white/40 focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500"
