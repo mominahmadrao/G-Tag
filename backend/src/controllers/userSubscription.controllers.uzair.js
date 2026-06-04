@@ -10,31 +10,44 @@ export const subscribeToPlan = asyncHandler(async (req, res) => {
   const { planId } = req.body;
   const userId = req.user._id;
 
-  // Verify the plan exists
   const plan = await SubscriptionPlan.findById(planId);
   if (!plan) {
     throw new ApiError(404, "The selected subscription plan does not exist");
   }
 
-  // Check if user already has an active subscription
-  const existingSub = await UserSubscription.findOne({
-    user: userId,
-    status: { $ne: SubscriptionStatusEnum.EXPIRED },
-  });
+  const existingSub = await UserSubscription.findOne({ user: userId });
 
   if (existingSub) {
-    existingSub.status = SubscriptionStatusEnum.EXPIRED;
+    // Overwrite the existing document parameters to completely avoid unique index collisions
+    existingSub.plan = planId;
+    existingSub.status = SubscriptionStatusEnum.ACTIVE;
+    existingSub.startDate = new Date(); // Re-initialize timestamps forward
+
+    // Save triggers the updated pre-save hook to recompute valid endDate intervals automatically
     await existingSub.save();
+
+    // Ensure the User Model maintains the reference pointer
+    await User.findByIdAndUpdate(userId, {
+      subscription: existingSub._id,
+    });
+
+    return res
+      .status(200)
+      .json(
+        new ApiResponse(
+          200,
+          existingSub,
+          `Successfully upgraded to the ${plan.name} plan!`,
+        ),
+      );
   }
 
-  // Create the subscription
   const newSubscription = await UserSubscription.create({
     user: userId,
     plan: planId,
     status: SubscriptionStatusEnum.ACTIVE,
   });
 
-  // Update the User Model to reference this subscription
   await User.findByIdAndUpdate(userId, {
     subscription: newSubscription._id,
   });
