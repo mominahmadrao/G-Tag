@@ -29,24 +29,16 @@ const userSubscriptionSchema = new Schema(
 userSubscriptionSchema.pre("save", async function () {
   if (!this.isModified("plan")) return;
 
-  try {
-    const SubscriptionPlan = mongoose.model("SubscriptionPlan");
-    const planDetails = await SubscriptionPlan.findById(this.plan);
+  const SubscriptionPlan = mongoose.model("SubscriptionPlan");
+  const planDetails = await SubscriptionPlan.findById(this.plan);
 
-    if (!planDetails) {
-      // Use your custom ApiError here for consistency
-      return next(new ApiError(404, "Subscription Plan not found"));
-    }
-
-    const expirationDate = new Date();
-    expirationDate.setDate(
-      expirationDate.getDate() + planDetails.durationInDays,
-    );
-    this.endDate = expirationDate;
-
-  } catch (error) {
-    next(error);
+  if (!planDetails) {
+    throw new ApiError(404, "Subscription Plan not found");
   }
+
+  const expirationDate = new Date();
+  expirationDate.setDate(expirationDate.getDate() + planDetails.durationInDays);
+  this.endDate = expirationDate;
 });
 
 export const UserSubscription = mongoose.model(
