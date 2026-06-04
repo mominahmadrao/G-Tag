@@ -36,7 +36,10 @@ const getAllProducts = asyncHandler(async (req, res) => {
   });
 
   pipeline.push({
-    $unwind: "$category",
+    $unwind: {
+      path: "$category",
+      preserveNullAndEmptyArrays: true,
+    }
   });
 
   // Join creator details
@@ -50,7 +53,10 @@ const getAllProducts = asyncHandler(async (req, res) => {
   });
 
   pipeline.push({
-    $unwind: "$createdBy",
+    $unwind: {
+      path: "$createdBy",
+      preserveNullAndEmptyArrays: true,
+    },
   });
 
   const products = await Product.aggregate(pipeline);
@@ -208,11 +214,10 @@ const toggleFeaturedProduct = asyncHandler(async (req, res) => {
       new ApiResponse(
         200,
         product,
-        `Product ${product.isFeatured ? "marked as featured" : "removed from featured"}`
-      )
+        `Product ${product.isFeatured ? "marked as featured" : "removed from featured"}`,
+      ),
     );
 });
-
 
 const deleteProduct = asyncHandler(async (req, res) => {
   const product = await Product.findById(req.params.id);
